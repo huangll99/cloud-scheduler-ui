@@ -3,14 +3,14 @@ import Router from 'vue-router'
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
     routes: [
         {
             path: '/',
             name: 'home',
             component: () => import('./views/Home.vue'),
-            redirect:'task',
-            children:[
+            redirect: 'task',
+            children: [
                 {
                     path: 'help',
                     name: 'help',
@@ -40,4 +40,16 @@ export default new Router({
         }
 
     ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+    debugger;
+    if ('/login' === to.path || localStorage.getItem("username") != null) {
+        next()
+    } else {
+        next('/login')
+    }
+
+});
+
+export default router

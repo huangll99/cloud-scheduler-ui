@@ -8,10 +8,10 @@
         <div class="ms-login">
             <Form :model="formItem" :label-width="60">
                 <FormItem label="用户名">
-                    <Input v-model="formItem.input" />
+                    <Input v-model="formItem.username"/>
                 </FormItem>
-                <FormItem label="密  码">
-                    <Input v-model="formItem.input" />
+                <FormItem label="密  码" >
+                    <Input type="password" v-model="formItem.password"/>
                 </FormItem>
 
             </Form>
@@ -35,24 +35,25 @@
     import ParticleEffectButton from '../components/particle-effect-button';
 
     export default {
-        components: {VueParticles,ParticleEffectButton},
+        components: {VueParticles, ParticleEffectButton},
         data: function () {
             return {
                 buttonStyles: {
                     background: '#34962d',
                     color: '#fff',
-                    textAlign:'center',
-                    lineHeight:'5px',
-                    height:'50px',
-                    zIndex:'120000'
+                    textAlign: 'center',
+                    lineHeight: '5px',
+                    height: '50px',
+                    zIndex: '120000',
+                    width: '230px'
                 },
                 buttonOptions: {
                     particleColor: '#ff1d50',
-                    duration: 2000,
+                    duration: 1000,
                     direction: 'right',
-                    flexDirection:'row',
+                    flexDirection: 'row',
                 },
-                text:'登录',
+                text: '登录',
                 hidden: false,
                 animating: false,
                 effectHidden: false,
@@ -69,18 +70,38 @@
                         {required: true, message: '请输入密码', trigger: 'blur'}
                     ]
                 },
-                formItem:{}
+                formItem: {
+                    username: "",
+                    password: ""
+                }
             }
         },
         methods: {
-            login(){
+            login() {
                 this.$router.push("/")
             },
             onBegin() {
                 console.log('begin event')
             },
             onComplete() {
-                this.$router.push("/")
+                if (this.formItem.username === '' || this.formItem.password === '') {
+                    this.$Message.warning("用户名和密码不能为空");
+                    this.hidden = false;
+                    return
+                }
+                this.$axios.post("/login", {
+                    username: this.formItem.username,
+                    password: this.formItem.password
+                }).then((res) => {
+                    if (res.data.success) {
+                        localStorage.setItem("username",this.formItem.username);
+                        this.$router.push("/")
+                    } else {
+                        this.$Message.warning("用户名或密码错误");
+                        this.hidden = false;
+                    }
+                });
+
             }
         }
     }
